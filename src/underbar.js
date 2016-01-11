@@ -212,9 +212,29 @@
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
-  _.some = function(collection, iterator) {
-    // TIP: There's a very clever way to re-use every() here.
+  
+  // TIP: There's a very clever way to re-use every() here.
+  _.some = function (collection, iterator) {
+  	iterator = iterator || _.identity;  // if iter is undefined, set it to use identity()
+  		return !_.every(collection, function (item) {  //don't have to do anything with "match"
+  			return !iterator(item);															//just need to return true or false
+ 		});
+	};
+  
+  /** LONG DEFINITION OF _.some **
+   _.some = function(collection, iterator) {
+    
+    return _.reduce(collection, function(someMatch, item) {
+    	if (iterator == undefined) {
+    		if (item) return true;
+    	} else if (iterator(item)) {
+    		someMatch = true;
+    		return someMatch;
+    	}
+    	return someMatch;
+    }, false);
   };
+  */
 
 
   /**
@@ -236,7 +256,22 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    if (!obj) { return; }
+    if (arguments.length == 1) {
+      return obj;
+    } else {
+      console.log('args: ', arguments);
+      for (var i=1; i<arguments.legnth; i++) {
+        var tempObj = arguments[i];
+        console.log('tempObj: ', tempObj);
+        for (var prop in tempObj) {
+          obj[prop] = tempObj[prop];
+          console.log('prop', prop, tempObj[prop]);
+        }
+      }
+    }
   };
+  
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
