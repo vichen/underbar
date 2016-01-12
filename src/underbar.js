@@ -256,27 +256,50 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
-    if (!obj) { return; }
-    if (arguments.length == 1) {
-      return obj;
-    } else {
-      console.log('args: ', arguments);
-      for (var i=1; i<arguments.legnth; i++) {
-        var tempObj = arguments[i];
-        console.log('tempObj: ', tempObj);
-        for (var prop in tempObj) {
-          obj[prop] = tempObj[prop];
-          console.log('prop', prop, tempObj[prop]);
-        }
-      }
-    }
+  	var args = Array.prototype.slice.call(arguments,1);
+  	
+  	_.each(args, function(newObj) {
+  		_.each(newObj, function(val, prop) {
+  			obj[prop] = val;
+  		});
+  	});
+  	return obj;
   };
+  
+  /* //LONG AND CONVOLUTED DEFINITION //
+    if (arguments.length == 1) {
+    	return obj;
+    } else {
+      	for (var i=1; i<arguments.length; i++) {
+        	var tempObj = arguments[i];
+        	for (var prop in tempObj) {
+          		obj[prop] = tempObj[prop];
+        	}
+      	}
+    };
+    return obj;
+  };
+  
+	*/
+
   
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+  	var args = Array.prototype.slice.call(arguments,1);
+  	
+  	_.each(args, function(newObj) {
+  		_.each(newObj, function(val, prop) {
+  			if (obj[prop] === undefined) {
+  				obj[prop] = val;
+  			};
+  		});
+  	});
+  	return obj;
   };
+  
+  	
 
 
   /**
@@ -319,6 +342,15 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+	var results = {};  
+	
+	return function() {
+	var args = Array.prototype.slice.call(arguments);
+		if (results[args] === undefined) {
+			results[args] = func.apply(this,arguments)
+  		};
+  		return results[args];
+  	};
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -328,6 +360,8 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+  	var args = Array.prototype.slice.call(arguments, 2);
+  	setTimeout(func.apply(this,args), wait);
   };
 
 
