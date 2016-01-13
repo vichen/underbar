@@ -215,9 +215,11 @@
   
   // TIP: There's a very clever way to re-use every() here.
   _.some = function (collection, iterator) {
-  	iterator = iterator || _.identity;  // if iter is undefined, set it to use identity()
-  		return !_.every(collection, function (item) {  //don't have to do anything with "match"
-  			return !iterator(item);															//just need to return true or false
+      // if iter is undefined, set it to use identity()
+  	iterator = iterator || _.identity;  
+  		return !_.every(collection, function (item) {  
+            //just need to return true or false
+  			return !iterator(item);															
  		});
 	};
   
@@ -256,10 +258,17 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    // create new args array, skipping over first argument (obj)
+    // since obj will eventually be returned anyways
   	var args = Array.prototype.slice.call(arguments,1);
   	
+    //for each argument...
   	_.each(args, function(newObj) {
+        // for each property of each argument...
   		_.each(newObj, function(val, prop) {
+            // the property key in object will be assigned
+            // the value at the property inside argument
+            // regardless of if it is already defined or not
   			obj[prop] = val;
   		});
   	});
@@ -287,13 +296,21 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    //create a new array with all arguments except for first one (obj)
+    //since object will eventually be returned anyways
   	var args = Array.prototype.slice.call(arguments,1);
   	
+    //for each argument....
   	_.each(args, function(newObj) {
+        //for each property of each argument...
   		_.each(newObj, function(val, prop) {
+            //if the object does not share the same property
+            //it will be undefined
   			if (obj[prop] === undefined) {
+                //the property in object will be assigned the
+                //value at prop inside argument array
   				obj[prop] = val;
-  			};
+  			}; // else do nothing, obj[prop] stays the same
   		});
   	});
   	return obj;
@@ -342,11 +359,17 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    // create a new results object that will store previous results
 	var results = {};  
 	
 	return function() {
+    // create a new array from the arguments
 	var args = Array.prototype.slice.call(arguments);
+        // if the result has not been previously computed,
+        // it will be undefined at the key in results
 		if (results[args] === undefined) {
+            // store the result of the function at the args key
+            // in results
 			results[args] = func.apply(this,arguments)
   		};
   		return results[args];
@@ -360,7 +383,13 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    // create a new array from arguments, but skip over first 2
+    // arguments since only those after the first 2 will be fed
+    // into the original function
   	var args = Array.prototype.slice.call(arguments, 2);
+    
+    // use setTimeout function to apply original function to the
+    //args in the args array
   	setTimeout(function() {func.apply(this,args)}, wait);
   };
 
@@ -382,9 +411,18 @@
       
       while (currentIndex != 0) {
           var rand = Math.floor(Math.random() * currentIndex);
+          //work backwards so we can limit the max index for
+          //remaining elements in the array
           currentIndex--;
+          
+          //temp stores current/original value
           temp = newArray[currentIndex];
+          
+          //replace current/original value with random index value
           newArray[currentIndex] = newArray[rand];
+          
+          //value at random index gets the current/original value
+          //to ensure that we keep all original elements
           newArray[rand] = temp;
       };
       return newArray;
@@ -402,6 +440,16 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+      
+      return _.map(collection, function(item) {
+        if (typeof(functionOrKey) === "string") {
+            return item[functionOrKey].apply(item, args);
+        } else {
+            return functionOrKey.apply(item, args);
+        };
+      });
+    
+      
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -409,6 +457,14 @@
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+      
+      return collection.sort(function(a,b) {
+          if (typeof(iterator) === "string") {
+              return (a[iterator] > b[iterator]) ? 1 : -1;
+          } else {
+              return (iterator(a) > iterator(b)) ? 1 : -1;
+          };
+      });
   };
 
   // Zip together two or more arrays with elements of the same index
@@ -416,14 +472,40 @@
   //
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
+
   _.zip = function() {
+    /*
+      var args = Array.prototype.slice(arguments);
+      var results = [];
+      
+      _.each(args, function(item, index) {
+          results[index] = _.pluck(args, index);
+      });
+      
+      return results;
+      */
   };
+
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
   // The new array should contain all elements of the multidimensional array.
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+      /*
+      var flatArray = result;
+      
+      function deepFlatten(nestedArray) {
+          _.each(nestedArray, function(item) {
+              if (item.isArray) {
+                deepFlatten(item);
+              } else {
+                  flatArray.push(item);
+              };
+          });
+          
+          return flatArray;
+      */
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
